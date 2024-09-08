@@ -1,24 +1,26 @@
-- hosts: mysql
+- hosts: db_servers
   become: yes
+  vars:
+    database_pass: "admin123"
   roles:
     - mysql
 
-- hosts: rabbitmq
+- hosts: rabbitmq_servers
   become: yes
   roles:
     - rabbitmq
 
-- hosts: memcached
+- hosts: memcached_servers
   become: yes
   roles:
     - memcached
 
-- hosts: appserver
+- hosts: app_servers
   become: yes
   roles:
     - tomcat
 
-- hosts: webserver
+- hosts: web_servers
   become: yes
   roles:
     - nginx

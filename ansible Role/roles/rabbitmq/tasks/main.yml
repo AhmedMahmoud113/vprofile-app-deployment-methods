@@ -1,50 +1,59 @@
 ---
-- name: Setup and configure MySQL
-  hosts: reabbitmq
+- name: Update all packages
   become: yes
+  dnf:
+    name: "*"
+    state: latest
 
-  tasks:
-    - name: update all packages
-      dnf:
-        name: "*"
-        state: latest
+- name: Install required packages
+  dnf:
+    name:
+      - epel-release
+      - wget
+    state: present
 
-    - name: Install required packages
-      yum:
-        name:
-          - epel-release
-          - wget
-        state: present
+- name: Install RabbitMQ repository
+  dnf:
+    name: centos-release-rabbitmq-38
+    state: present
 
-    - name: Install RabbitMQ repository
-      dnf:
-        name: centos-release-rabbitmq-38
-        state: present
+- name: Install RabbitMQ Server
+  dnf:
+    name: rabbitmq-server
+    enablerepo: centos-rabbitmq-38
+    state: present
 
-    - name: Install RabbitMQ Server
-      dnf:
-        name: rabbitmq-server
-        enablerepo: centos-rabbitmq-38
-        state: present
+- name: Enable and start RabbitMQ Server
+  systemd:
+    name: rabbitmq-server
+    enabled: yes
+    state: started
 
-    - name: Enable and start RabbitMQ Server
-      systemd:
-        name: rabbitmq-server
-        enabled: yes
-        state: started
+- name: Allow remote access in RabbitMQ config
+  copy:
+    content: "[{rabbit, [{loopback_users, []}]}]."
+    dest: /etc/rabbitmq/rabbitmq.config
+  notify: Restart RabbitMQ Server
 
-    - name: Allow remote access in RabbitMQ config
-      copy:
-        content: "[{rabbit, [{loopback_users, []}]}]."
-        dest: /etc/rabbitmq/rabbitmq.config
+- name: Ensure RabbitMQ user 'test' exists
+  rabbitmq_user:
+    user: test
+    password: "test"
+    state: present
 
-    - name: Add a new RabbitMQ user
-      command: rabbitmqctl add_user test test
+- name: Ensure RabbitMQ user 'test' has administrator tag
+  rabbitmq_user:
+    user: test
+    tags: administrator
+    state: present
 
-    - name: Assign administrator tag to the new user
-      command: rabbitmqctl set_user_tags test administrator
+- name: Ensure RabbitMQ user 'test' has necessary permissions
+  rabbitmq_user:
+    user: test
+    permissions:
+      - vhost: /
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+    state: present
 
-    - name: Restart RabbitMQ Server to apply any changes
-      systemd:
-        name: rabbitmq-server
-        state: restarted

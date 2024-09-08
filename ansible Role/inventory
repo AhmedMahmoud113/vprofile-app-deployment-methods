@@ -1,0 +1,14 @@
+[all:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[db_servers]
+db01 ansible_host=192.168.56.15 ansible_user=vagrant
+[rabbitmq_servers]
+rmq01 ansible_host=192.168.56.14 ansible_user=vagrant
+[memcached_servers]
+mc01 ansible_host=192.168.56.13 ansible_user=vagrant
+[app_servers]
+app01 ansible_host=192.168.56.12 ansible_user=vagrant
+
+[web_servers]
+web01 ansible_host=192.168.56.11 ansible_user=vagrant

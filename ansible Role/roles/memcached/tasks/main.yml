@@ -1,34 +1,29 @@
----
-- name: Setup and configure MySQL
-  hosts: memcached
+- name: Update all packages
   become: yes
+  dnf:
+    name: "*"
+    state: latest
 
-  tasks:
-    - name: update all packages
-      dnf:
-        name: "*"
-        state: latest
+- name: Install required packages
+  dnf:
+    name:
+    - epel-release
+    - memcached
+    state: present
 
-    - name: Install required packages
-      dnf:
-        name:
-          - epel-release
-          - memcached
-        state: present
+- name: Enable and start Memcached serviceansible_local
+  systemd:
+    name: memcached
+    enabled: yes
+    state: started
 
-    - name: Enable and start Memcached service
-      systemd:
-        name: memcached
-        enabled: yes
-        state: started
+- name: Replace 127.0.0.1 with 0.0.0.0 in memcached config
+  replace:
+    path: /etc/sysconfig/memcached
+    regexp: '127\.0\.0\.1'
+    replace: "0.0.0.0"
 
-    - name: Replace 127.0.0.1 with 0.0.0.0 in memcached config
-      replace:
-        path: /etc/sysconfig/memcached
-        regexp: '127\.0\.0\.1'
-        replace: "0.0.0.0"
-
-    - name: Restart Memcached service
-      systemd:
-        name: memcached
-        state: restarted
+- name: Restart Memcached service
+  systemd:
+    name: memcached
+    state: restarted
