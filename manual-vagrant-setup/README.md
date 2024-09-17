@@ -73,7 +73,7 @@ mysql> exit;
 ```
 Download Source code & Initialize Database
 ```ruby
-https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
+git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
 cd vprofile-project
 mysql -u root -padmin123 accounts < src/main/resources/db_backup.sql
 mysql -u root -padmin123 accounts
@@ -267,7 +267,7 @@ firewall-cmd --reload
 
 Download Source code
 ```ruby
-https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
+git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
 ```
 Update configuration
 ```ruby
