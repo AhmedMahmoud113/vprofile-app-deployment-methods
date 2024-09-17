@@ -55,10 +55,10 @@ sudo systemctl start tomcat
 sudo systemctl enable tomcat
 
 # Clone the vprofile project from GitHub
-sudo git clone -b main https://github.com/hkhcoder/vprofile-project.git
+sudo git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
 
 # Change directory to the vprofile project
-cd vprofile-project
+cd vprofile-app-deployment-methods
 
 # Build the project using Maven
 sudo mvn install
