@@ -1,4 +1,4 @@
-# Project Title
+# vProfile Project - Manual Vagrant Setup
 
 ## Introduction:
 This section outlines the manual deployment of the VProfile application using Vagrant. The purpose of this approach is to demonstrate a hands-on method where each service and configuration is manually set up, providing deeper insight into the underlying infrastructure.
