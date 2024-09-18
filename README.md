@@ -10,8 +10,7 @@ Welcome to the **VProfile App Deployment** repository. This project demonstrates
   - [2. Automated Vagrant Setup](#2-automated-vagrant-setup)
   - [3. Automated Vagrant Setup with Ansible](#3-automated-vagrant-setup-with-ansible)
   - [4. AWS Automated Setup](#4-aws-automated-setup)
-  - [5. Using AWS Managed Services (RDS, Amazon MQ)](#5-using-aws-managed-services-rds-amazon-mq)
-  - [6. Terraform and Jenkins (Planned)](#6-terraform-and-jenkins-planned)
+  - [5. AWS Managed Services (RDS, Amazon MQ, ElastiCache)](#5-aws-managed-services-rds-amazon-mq-elasticache)
 - [Key Features](#key-features)
 - [Challenges and Learnings](#challenges-and-learnings)
 - [Getting Started](#getting-started)
@@ -53,19 +52,13 @@ In this method, **Ansible roles** are used in conjunction with **Vagrant** to au
 
 Using automation scripts, this method deploys the VProfile application on AWS with minimal manual intervention. It showcases the ability to leverage cloud infrastructure efficiently.
 
-- *[Link to AWS Automated Setup (Coming Soon)]*
+- [View AWS Automated Setup](./aws-automated-setup/README.md)
 
-### 5. Using AWS Managed Services (RDS, Amazon MQ)
+### 5. AWS Managed Services RDS, Amazon MQ, ElastiCache
 
 In this approach, AWS managed services like RDS for the database and Amazon MQ for the message broker are utilized. This method demonstrates a cloud-native deployment with managed services.
 
-- *[Link to AWS Managed Services Setup (Coming Soon)]*
-
-### 6. Terraform and Jenkins (Planned)
-
-Currently working on implementing this project using Terraform for infrastructure as code and Jenkins for continuous integration and deployment (CI/CD). This will provide a fully automated, scalable solution.
-
-- *[Link to Terraform and Jenkins Setup (Coming Soon)]*
+- [Using AWS Managed Services (RDS, Amazon MQ, ElastiCache)](./aws-managed-services%20(RDS,%20Amazon%20MQ,%20ElastiCache)/README.md)
 
 ## Key Features
 
