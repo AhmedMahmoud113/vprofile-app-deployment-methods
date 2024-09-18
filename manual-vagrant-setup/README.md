@@ -1,4 +1,4 @@
-# Project Title
+# vProfile Project - Manual Vagrant Setup
 
 ## Introduction:
 This section outlines the manual deployment of the VProfile application using Vagrant. The purpose of this approach is to demonstrate a hands-on method where each service and configuration is manually set up, providing deeper insight into the underlying infrastructure.
@@ -74,7 +74,7 @@ mysql> exit;
 Download Source code & Initialize Database
 ```ruby
 git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
-cd vprofile-project
+cd vprofile-app-deployment-methods
 mysql -u root -padmin123 accounts < src/main/resources/db_backup.sql
 mysql -u root -padmin123 accounts
 ```
@@ -271,7 +271,7 @@ git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-met
 ```
 Update configuration
 ```ruby
-cd vprofile-project
+cd vprofile-app-deployment-methods
 vim src/main/resources/application.properties
 Update file with backend server details
 ```
