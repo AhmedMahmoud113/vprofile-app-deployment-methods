@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **vProfile** project is a multi-tier web application designed to demonstrate the integration of various technologies such as Nginx, Tomcat, MongoDB, MySQL, RabbitMQ, and Memcached. This setup automates the provisioning and configuration of virtual machines using Vagrant and custom scripts, streamlining the deployment process.
+The **vProfile** project is a multi-tier web application that integrates various technologies such as Nginx, Tomcat, MongoDB, MySQL, RabbitMQ, and Memcached. This automated setup uses Vagrant and custom scripts to provision and configure virtual machines, streamlining the deployment process.
 
 ## Table of Contents
 
@@ -19,12 +19,13 @@ The **vProfile** project is a multi-tier web application designed to demonstrate
 ## Project Structure
 
 - **Vagrantfile**: The main configuration file for Vagrant, defining VM specifications and network settings.
-- **scripts/**: A directory containing provisioning scripts for each service:
+- **scripts/**: Directory containing provisioning scripts for each service:
   - `nginx.sh`
   - `tomcat.sh`
   - `mysql.sh`
   - `rabbitmq.sh`
   - `memcache.sh`
+- **resources/**: Contains additional configuration files and resources needed for provisioning.
 
 ## Prerequisites
 
@@ -33,6 +34,7 @@ Ensure you have the following software installed on your machine:
 - **Vagrant** >= 2.x
 - **VirtualBox** >= 6.x (or another compatible Vagrant provider)
 - **Git** (for cloning the repository)
+- **Ansible** (if using Ansible provisioning)
 
 ## Installation
 
@@ -42,50 +44,85 @@ Follow these steps to set up the development environment:
 
    ```ruby
    git clone -b main https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git
+   ```
 
 2. **Navigate to the Automated Setup Directory**
 
    ```ruby
-   cd automated-vagrant-setup
+   cd vprofile-app-deployment-methods/automated-vagrant-setup
+   ```
 
 3. **Start Vagrant**
+
    ```ruby
    vagrant up
+   ```
 
-This command will create and configure the virtual machines automatically, provisioning all required services.
+   This command will automatically create and configure the virtual machines, provisioning all required services.
 
 ## How It Works
 
 The automated setup leverages Vagrant's provisioning capabilities along with custom shell scripts to automate the deployment process:
-- **Vagrant** : Defines the configuration for multiple virtual machines, including their CPU, memory, and network settings.
-- **Provisioning Scripts** : Each script installs and configures a specific service on the respective VM.
+
+- **Vagrant**: Defines configurations for multiple virtual machines, including CPU, memory, and network settings.
+- **Provisioning Scripts**: Each script installs and configures a specific service on its respective VM.
+- **Networking**: Sets up private networks and host-only adapters to allow communication between VMs.
 
 ## Accessing the Application
 
-Once the ```vagrant up``` process is complete, you can access the vProfile application through your web browser:
+Once the **vagrant up** process is complete, you can access the vProfile application through your web browser:
+
+- **URL**:
+
   ```ruby
   http://app01:8080
   ```
+
+  Replace the IP address with the one configured in your **Vagrantfile** if different.
+
 ## Troubleshooting
 
-<h3>Vagrant Up Issues</h3>
+### Common Issues
 
-- Ensure compatible versions of Vagrant and VirtualBox are installed.
-- Check for any running virtual machines that might conflict with network settings.
-- Run ```vagrant status``` to verify the state of your VMs.
+#### Vagrant Up Errors
 
-<h3>Service-Specific Problems</h3>
+- **Version Compatibility**: Ensure compatible versions of Vagrant and VirtualBox are installed.
+- **Network Conflicts**: Check for any running virtual machines that might conflict with network settings.
+- **VM Status**: Run **vagrant status** to verify the state of your VMs.
 
-- SSH into the problematic VM using:
-   ```ruby
+#### Service-Specific Problems
+
+- **SSH into VM**:
+
+  ```ruby
   vagrant ssh <vm-name>
   ```
-- Check the status of the service using system-specific commands, e.g.:
-   ```ruby
-  systemctl status nginx
+
+- **Check Service Status**:
+
+  ```ruby
+  systemctl status <service-name>
   ```
-- Review log files located in ```/var/log/``` for error details.
-  
+
+  Replace `<service-name>` with services like `nginx`, `tomcat`, `mysql`, etc.
+
+- **View Logs**: Check log files in **/var/log/** for error details.
+
+### Debugging Tips
+
+- **Provisioning Errors**: If a provisioning script fails, you can re-run it:
+
+  ```ruby
+  vagrant provision <vm-name>
+  ```
+
+- **Destroy and Recreate VM**: As a last resort, you can destroy a VM and recreate it:
+
+  ```ruby
+  vagrant destroy <vm-name>
+  vagrant up <vm-name>
+  ```
+
 ## Final Result
 
 The following screenshots showcase the final deployment of the **vProfile** application, demonstrating the integration of multiple services and the web application in action.
@@ -100,7 +137,7 @@ The login page allows users to authenticate into the vProfile system, featuring 
 
 ![msedge_gifbbyCgIF](https://github.com/user-attachments/assets/4010e941-f026-412c-8466-d9e2868eb145)
 
-Once logged in, users can access their dashboard where they can view and manage their account details, activities, and personal information.
+Once logged in, users can access their dashboard to view and manage their account details, activities, and personal information.
 
 ### 3. User List
 
@@ -112,7 +149,7 @@ This page displays a list of all users registered in the system. Admins can view
 
 ![msedge_2BwcpFPRDA](https://github.com/user-attachments/assets/c6ee1c74-c100-47d1-b992-3eafe279f700)
 
-This screenshot shows the user's primary and extra details fetched directly from the database before being cached for performance optimization.
+This screenshot shows the user's primary and extra details fetched directly from the database before being cached.
 
 ### 5. User Data After Cache
 
@@ -123,6 +160,7 @@ Here, the same user data is displayed, but now it's retrieved from the cache for
 ## Contact
 
 For any inquiries or suggestions, please feel free to reach out:
-- Email: [ahmedmahmoud0131@gmail.com]
-- GitHub: [Github Profile](https://github.com/AhmedMahmoud113)
-- LinkedIn: [LinkedIn Profile](https://www.linkedin.com/in/ahmed-mahmoud-03b938238/)
+
+- **Email**: [ahmedmahmoud0131@gmail.com](mailto:ahmedmahmoud0131@gmail.com)
+- **GitHub**: [AhmedMahmoud113](https://github.com/AhmedMahmoud113)
+- **LinkedIn**: [Ahmed Mahmoud](https://www.linkedin.com/in/ahmed-mahmoud-03b938238/)
