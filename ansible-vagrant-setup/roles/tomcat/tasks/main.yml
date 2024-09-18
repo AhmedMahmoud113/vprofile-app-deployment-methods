@@ -1,0 +1,127 @@
+---
+- name: Update the system and install required packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: Install Java JDK and development tools, along with Git, Maven, and Wget
+  yum:
+    name: "{{ java_packages }}"
+    state: present
+
+- name: Create Tomcat user
+  user:
+    name: "{{ tomcat_user }}"
+    shell: /sbin/nologin
+    home: "{{ tomcat_install_dir }}"
+    create_home: no
+    system: yes
+
+- name: Download Apache Tomcat
+  get_url:
+    url: "{{ tomcat_download_url }}"
+    dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+- name: Extract the downloaded Tomcat archive
+  unarchive:
+    src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+
+- name: Create Tomcat installation directory
+  file:
+    path: "{{ tomcat_install_dir }}"
+    state: directory
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+
+- name: Copy the extracted Tomcat files to the installation directory
+  copy:
+    src: "/tmp/apache-tomcat-{{ tomcat_version }}/"
+    dest: "{{ tomcat_install_dir }}/"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "0755"
+    remote_src: yes
+
+- name: Create a systemd service file for Tomcat
+  template:
+    src: tomcat.service
+    dest: /etc/systemd/system/tomcat.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+
+- name: Reload systemd to apply the new Tomcat service configuration
+  systemd:
+    daemon_reload: yes
+
+- name: Start and enable the Tomcat service
+  systemd:
+    name: tomcat
+    enabled: yes
+    state: started
+
+- name: Clone the vprofile project from GitHub
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ project_dir }}"
+    version: "{{ git_branch }}"
+    force: yes
+
+# **New Task: Copy application.properties**
+- name: Copy application.properties to src/main/resources
+  copy:
+    src: application.properties
+    dest: "{{ project_dir }}/src/main/resources/application.properties"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "0644"
+
+- name: Build the project using Maven
+  shell: mvn install
+  args:
+    chdir: "{{ project_dir }}"
+
+- name: Stop the Tomcat service before deploying the new application
+  systemd:
+    name: tomcat
+    state: stopped
+
+- name: Remove the default ROOT application
+  file:
+    path: "{{ tomcat_install_dir }}/webapps/ROOT"
+    state: absent
+
+- name: Deploy the new application by copying the WAR file
+  copy:
+    src: "{{ war_file_source }}"
+    dest: "{{ war_file_dest }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "0644"
+
+- name: Change ownership of the Tomcat webapps directory
+  file:
+    path: "{{ tomcat_install_dir }}/webapps"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    recurse: yes
+
+- name: Start the Tomcat service to deploy the new application
+  systemd:
+    name: tomcat
+    state: started
+
+- name: Disable and stop the firewalld service
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Restart the Tomcat service to ensure all changes are applied
+  systemd:
+    name: tomcat
+    state: restarted

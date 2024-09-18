@@ -1,0 +1,6 @@
+---
+memcached_tcp_port: 11211
+memcached_udp_port: 11111
+memcached_cachesize: 64
+memcached_maxconn: 1024
+memcached_listen_ip: "0.0.0.0"

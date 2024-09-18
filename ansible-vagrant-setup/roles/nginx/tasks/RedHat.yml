@@ -1,0 +1,14 @@
+---
+- name: Remove default Nginx configuration to avoid conflicts
+  file:
+    path: "{{ nginx_conf_d }}/default.conf"
+    state: absent
+
+- name: Create Nginx configuration file for the vproapp application
+  template:
+    src: vproapp.j2
+    dest: "{{ nginx_conf_d }}/{{ nginx_config_file }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload Nginx

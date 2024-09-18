@@ -1,0 +1,73 @@
+---
+- name: Update all packages
+  become: yes
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install required packages
+  dnf:
+    name:
+      - epel-release
+      - git
+      - mariadb-server
+    state: present
+
+- name: Enable and start MariaDB service
+  systemd:
+    name: mariadb
+    enabled: yes
+    state: started
+
+- name: Check if root password is already set
+  command: "mysqladmin -u root -p{{ db_root_password }} status"
+  ignore_errors: yes
+  register: mysql_root_pass_check
+
+- name: Set root password for MariaDB if not set
+  mysql_user:
+    name: root
+    password: "{{ db_root_password }}"
+    login_unix_socket: /var/lib/mysql/mysql.sock
+    check_implicit_admin: yes
+    state: present
+  when: mysql_root_pass_check.failed
+
+- name: Create database "{{ db_name }}"
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+
+- name: Create admin user and grant privileges on "{{ db_name }}" database
+  mysql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_user_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    host: "{{ item }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+  loop:
+    - "localhost"
+    - "%"
+
+- name: Clone vProfile project repository
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ git_repo_dest }}"
+    version: "{{ git_branch }}"
+
+- name: Restore the database dump
+  mysql_db:
+    name: "{{ db_name }}"
+    state: import
+    target: "{{ git_repo_dest }}/src/main/resources/db_backup.sql"
+    login_user: root
+    login_password: "{{ db_root_password }}"
+
+- name: Restart MariaDB service
+  systemd:
+    name: mariadb
+    state: restarted

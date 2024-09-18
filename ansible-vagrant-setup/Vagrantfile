@@ -1,0 +1,103 @@
+Vagrant.configure("2") do |config|
+
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.ssh.insert_key = false
+  config.ssh.username = "vagrant"
+
+
+  ###### Create DB VM ######
+  config.vm.define "mysql" do |db|
+    db.vm.box = "eurolinux-vagrant/centos-stream-9"
+    config.ssh.username = "vagrant"
+    db.vm.hostname = "db01"
+    db.vm.network "private_network", ip: "192.168.56.15"
+    db.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+    db.vm.provision "shell", inline: <<-SHELL
+      sudo dnf install -y epel-release
+      sudo dnf install -y python3-mysqlclient ansible
+    SHELL
+    db.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.inventory_path = "inventory"
+      ansible.limit = "db_servers"
+    end
+  end
+
+  ###### Create RabbitMQ Server VM ######
+  config.vm.define "rabbitmq" do |rabbit|
+    rabbit.vm.box = "eurolinux-vagrant/centos-stream-9"
+    rabbit.vm.hostname = "rmq01"
+    rabbit.vm.network "private_network", ip: "192.168.56.14"
+    rabbit.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+    rabbit.vm.provision "shell", inline: <<-SHELL
+      sudo dnf install -y epel-release
+      sudo dnf install -y ansible
+    SHELL
+    rabbit.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.inventory_path = "inventory"
+      ansible.limit = "rabbitmq_servers"
+    end
+  end
+
+  ###### Create Memcached Server VM ######
+  config.vm.define "memcached" do |mem|
+    mem.vm.box = "eurolinux-vagrant/centos-stream-9"
+    mem.vm.hostname = "mc01"
+    mem.vm.network "private_network", ip: "192.168.56.13"
+    mem.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+    end
+    mem.vm.provision "shell", inline: <<-SHELL
+      sudo dnf install -y epel-release
+      sudo dnf install -y ansible
+    SHELL
+    mem.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.inventory_path = "inventory"
+      ansible.limit = "memcached_servers"
+    end
+  end
+
+  ###### Create Application Server (Tomcat) VM ######
+  config.vm.define "appserver" do |app|
+    app.vm.box = "eurolinux-vagrant/centos-stream-9"
+    app.vm.hostname = "app01"
+    app.vm.network "private_network", ip: "192.168.56.12"
+    app.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+    end
+    app.vm.provision "shell", inline: <<-SHELL
+      sudo dnf install -y epel-release
+      sudo dnf install -y ansible
+    SHELL
+    app.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.inventory_path = "inventory"
+      ansible.limit = "app_servers"
+    end
+  end
+
+  ###### Create Web Server (Nginx) VM ######
+  config.vm.define "webserver" do |web|
+    web.vm.box = "ubuntu/jammy64"
+    web.vm.hostname = "web01"
+    web.vm.network "private_network", ip: "192.168.56.11"
+    web.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+    end
+    web.vm.provision "shell", inline: <<-SHELL
+      sudo dnf install -y ansible
+    SHELL
+    web.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.inventory_path = "inventory"
+      ansible.limit = "web_servers"
+    end
+  end
+end

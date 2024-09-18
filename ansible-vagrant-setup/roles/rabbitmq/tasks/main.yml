@@ -1,0 +1,58 @@
+---
+- name: Update all packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: Install epel-release and wget
+  yum:
+    name:
+      - epel-release
+      - wget
+    state: present
+
+- name: Install RabbitMQ repository
+  yum:
+    name: centos-release-rabbitmq-38
+    state: present
+
+- name: Install RabbitMQ Server
+  yum:
+    name: rabbitmq-server
+    enablerepo: centos-rabbitmq-38
+    state: present
+
+- name: Ensure RabbitMQ Server is enabled and running
+  systemd:
+    name: rabbitmq-server
+    enabled: yes
+    state: started
+
+- name: Configure RabbitMQ to allow remote access
+  template:
+    src: rabbitmq.config.j2
+    dest: /etc/rabbitmq/rabbitmq.config
+    owner: root
+    group: rabbitmq
+    mode: "0644"
+  notify: Restart RabbitMQ
+
+- name: Add RabbitMQ user with administrator tag
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_user }}"
+    password: "{{ rabbitmq_password }}"
+    tags: "{{ rabbitmq_user_tags }}"
+    state: present
+
+- name: Ensure firewalld is enabled and running
+  systemd:
+    name: firewalld
+    enabled: yes
+    state: started
+
+- name: Open port 5672 for RabbitMQ TCP traffic
+  firewalld:
+    port: 5672/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes

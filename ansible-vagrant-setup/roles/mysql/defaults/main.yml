@@ -1,0 +1,7 @@
+db_root_password: admin123
+db_name: accounts
+db_user: admin
+db_user_password: admin123
+git_repo_url: "https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git"
+git_repo_dest: "/tmp/vprofile-app-deployment-methods"
+git_branch: "main"

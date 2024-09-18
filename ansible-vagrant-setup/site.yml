@@ -1,0 +1,24 @@
+- hosts: db_servers
+  become: yes
+  roles:
+    - mysql
+
+- hosts: rabbitmq_servers
+  become: yes
+  roles:
+    - rabbitmq
+
+- hosts: memcached_servers
+  become: yes
+  roles:
+    - memcached
+
+- hosts: app_servers
+  become: yes
+  roles:
+    - tomcat
+
+- hosts: web_servers
+  become: yes
+  roles:
+    - nginx

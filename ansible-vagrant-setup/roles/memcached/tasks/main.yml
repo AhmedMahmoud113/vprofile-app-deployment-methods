@@ -1,0 +1,80 @@
+---
+- name: Ensure system packages are up to date
+  become: yes
+  dnf:
+    name: "*"
+    state: latest
+
+- name: Install EPEL release
+  become: yes
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Install Memcached
+  become: yes
+  dnf:
+    name: memcached
+    state: present
+
+- name: Ensure Memcached is enabled and started
+  become: yes
+  systemd:
+    name: memcached
+    state: started
+    enabled: yes
+
+- name: Modify Memcached configuration to listen on all IP addresses
+  become: yes
+  replace:
+    path: /etc/sysconfig/memcached
+    regexp: '127\.0\.0\.1'
+    replace: "{{ memcached_listen_ip }}"
+  notify: Restart Memcached
+
+- name: Set TCP port in Memcached configuration
+  become: yes
+  lineinfile:
+    path: /etc/sysconfig/memcached
+    regexp: "^PORT="
+    line: 'PORT="{{ memcached_tcp_port }}"'
+    create: yes
+  notify: Restart Memcached
+
+- name: Set UDP port in Memcached configuration
+  become: yes
+  lineinfile:
+    path: /etc/sysconfig/memcached
+    regexp: "^UDPPORT="
+    line: 'UDPPORT="{{ memcached_udp_port }}"'
+    create: yes
+  notify: Restart Memcached
+
+- name: Ensure firewalld is enabled and running
+  become: yes
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Open port 11211 for Memcached TCP traffic
+  become: yes
+  firewalld:
+    port: 11211/tcp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Open port 11111 for Memcached UDP traffic
+  become: yes
+  firewalld:
+    port: 11111/udp
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Reload firewalld
+  become: yes
+  systemd:
+    name: firewalld
+    state: reloaded

@@ -1,0 +1,19 @@
+---
+java_packages:
+  - java-11-openjdk
+  - java-11-openjdk-devel
+  - git
+  - maven
+  - wget
+
+tomcat_version: 9.0.75
+tomcat_download_url: "https://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+tomcat_install_dir: "/usr/local/tomcat"
+tomcat_user: "tomcat"
+tomcat_group: "tomcat"
+
+git_repo_url: "https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git"
+git_branch: "main"
+project_dir: "/tmp/vprofile-app-deployment-methods"
+war_file_source: "{{ project_dir }}/target/vprofile-v2.war"
+war_file_dest: "{{ tomcat_install_dir }}/webapps/ROOT.war"

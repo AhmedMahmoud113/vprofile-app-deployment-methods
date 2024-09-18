@@ -1,0 +1,22 @@
+---
+- name: Remove default Nginx configuration to avoid conflicts
+  file:
+    path: "{{ nginx_sites_enabled }}/default"
+    state: absent
+
+- name: Create Nginx configuration file for the vproapp application
+  template:
+    src: vproapp.j2
+    dest: "{{ nginx_sites_available }}/{{ nginx_config_file }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload Nginx
+
+- name: Enable the vproapp site by creating a symbolic link
+  file:
+    src: "{{ nginx_sites_available }}/{{ nginx_config_file }}"
+    dest: "{{ nginx_sites_enabled }}/{{ nginx_config_file }}"
+    state: link
+    force: yes
+  notify: Reload Nginx

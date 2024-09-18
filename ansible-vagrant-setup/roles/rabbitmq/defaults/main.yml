@@ -1,0 +1,4 @@
+---
+rabbitmq_user: test
+rabbitmq_password: test
+rabbitmq_user_tags: administrator

@@ -1,0 +1,28 @@
+---
+- name: Ensure package cache is up to date (Debian/Ubuntu)
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure package cache is up to date (RedHat/CentOS)
+  yum:
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: Install Nginx
+  package:
+    name: "{{ nginx_package_name }}"
+    state: present
+
+- name: Include OS-specific tasks
+  include_tasks: "{{ item }}.yml"
+  when: ansible_os_family == item
+  loop:
+    - "Debian"
+    - "RedHat"
+
+- name: Start and enable Nginx service
+  service:
+    name: "{{ nginx_service_name }}"
+    state: started
+    enabled: yes

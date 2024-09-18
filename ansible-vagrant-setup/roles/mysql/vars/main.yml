@@ -1,0 +1,11 @@
+---
+epel_packages:
+  - epel-release
+  - git
+  - zip
+  - unzip
+mariadb_packages:
+  - mariadb-server
+git_repo_url: "https://github.com/AhmedMahmoud113/vprofile-app-deployment-methods.git"
+git_repo_dest: "/tmp/vprofile-app-deployment-methods"
+git_branch: "main"

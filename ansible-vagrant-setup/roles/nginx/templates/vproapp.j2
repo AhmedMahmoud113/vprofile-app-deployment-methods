@@ -1,0 +1,11 @@
+upstream vproapp {
+    server {{ nginx_upstream_server }}:{{ nginx_upstream_port }};
+}
+
+server {
+    listen {{ nginx_listen_port }};
+
+    location / {
+        proxy_pass http://vproapp;
+    }
+}
